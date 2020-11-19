@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        .container {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-top: 5%;
+        }
+    </style>
+</head>
+<body>
+<form name="form">
+    <div class="container">
+        <div class="col-sm-4 offset-4">
+            <h1 class="h3 mb-3 font-weight-normal text-center">Please sign up</h1>
+            <div class="alert alert-danger" role="alert" id="message">
+            </div>
+            <div class="form-group">
+                <label for="inputEmail1">Enter email address</label>
+                <input type="email" class="form-control" placeholder="email" id="inputEmail1"
+                       aria-describedby="emailHelp" required>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword1">Enter password</label>
+                <input type="password" required minlength="5" class="form-control" placeholder="password"
+                       id="inputPassword1">
+            </div>
+            <div class="form-group">
+                <label for="inputPassword2">Confirm password</label>
+                <input type="password" required minlength="5" placeholder="password" class="form-control"
+                       id="inputPassword2">
+            </div>
+            <input type="submit" id="button" class="btn btn-primary" value="Submit">
+        </div>
+    </div>
+</form>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+<script>
+    const message = document.getElementById("message");
+    message.hidden = true;
+    const url = 'http://localhost:8889/api/register';
+    const redirectUrl = 'http://localhost:8889/login';
+    const password = document.getElementById("inputPassword1");
+    const email = document.getElementById("inputEmail1");
+    const confirmPassword = document.getElementById("inputPassword2");
+    const submit = document.getElementById("button");
+
+    const register = async () => {
+        const data = JSON.stringify({
+            email: email.value,
+            password: password.value
+        });
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: data,
+                headers: {
+                    "Content-type": "application/json",
+                }
+            });
+            if (response.ok) {
+                window.location.replace("http://localhost:8889");
+                alert('You have been registered')
+            } else {
+                response.json().then(data => {
+                    renderMessage(data.message)
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    submit.addEventListener('click', (event) => {
+        event.preventDefault();
+        console.log('work');
+        if (validateEmail() && validatePassword()) {
+            register();
+        }
+    });
+
+
+    const validateEmail = () => {
+        const mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        const emailValue = email.value;
+        if (!emailValue.match(mailformat)) {
+            renderMessage(`Incorrect email format ${emailValue}`);
+            return false;
+        }
+        return true;
+    };
+
+    const validatePassword = () => {
+        if (password.value.length < 5 || confirmPassword.value.length < 5) {
+            renderMessage('Number of symbols of the password has not to be less 5');
+            return false;
+        }
+        if (password.value !== confirmPassword.value) {
+            renderMessage('Password and confirmation are unequal');
+            return false;
+        }
+        return true;
+    };
+
+    const renderMessage = (mes) => {
+        message.innerHTML = mes;
+        message.hidden = false;
+        window.scrollTo(0, 0);
+    }
+</script>
+</body>
+</html>
