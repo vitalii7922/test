@@ -1,0 +1,6 @@
+create table account (
+    id int auto_increment primary key,
+    login varchar(50) not null unique,
+    first_name varchar(50),
+    second_name varchar(50)
+)  engine=InnoDB;
